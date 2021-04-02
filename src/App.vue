@@ -1,32 +1,90 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+<div id="app">
+  <div id="menu">
+    <div class="special">
+      <router-link to="/">
+        <h2>Welcome to the Car Browser!</h2>
+      </router-link>
     </div>
-    <router-view/>
   </div>
+      <h1>Browse Cars Below!</h1>
+      <router-link to="/browse">
+        <h3>Quick Filter</h3>
+      </router-link>
+      <div id="special2">
+
+      </div>
+  <router-view />
+</div>
 </template>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 50px 100px;
+  font-family: 'Josefin Sans', sans-serif;
   text-align: center;
-  color: #2c3e50;
 }
 
-#nav {
-  padding: 30px;
+#menu {
+  display: grid;
+
+  grid-template-areas: "brand";
 }
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
+#menu a {
+  color: #B7E9F7;
 }
 
-#nav a.router-link-exact-active {
-  color: #42b983;
+#brand {
+  grid-area: brand;
+  display: flex;
+  justify-content: center;
+}
+
+#brand img {
+  height: 200px;
+}
+
+
+.menu-item {
+  display: flex;
+  flex-direction: column;
+}
+
+
+.browse {
+  margin-right: 50px;
+}
+
+.special {
+  grid-area: brand;
+  text-align: center;
+  background-color: #7AD7F0;
+  color: #fff;
+  padding: 20px;
+  margin: 0px;
+  display: flex;
+  justify-content: center;
+  font-size: 50px;
+}
+
+.special2 {
+  grid-area: brand;
+  text-align: center;
+  background-color: #7AD7F0;
+  color: #fff;
+  padding: 20px;
+  margin: 0px;
+  display: flex;
+  justify-content: center;
+  font-size: 30px;
+}
+
+.special2 a{
+  font-size: 30px;
 }
 </style>
