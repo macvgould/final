@@ -12,21 +12,20 @@
     <div class="price">
       <h2>{{car.price}}</h2>
     </div>
-
     <form v-on:submit.prevent="addComment(car.id)">
       <input v-model="addedName" placeholder="Name">
       <textarea v-model="addedComment"></textarea>
       <br />
       <button type="submit">Add comment</button>
+      <br />
+      <br />
     </form>
-
-
-    <h3>Comments</h3>
-    <div v-for="comment in car.comments" :key = "comment.text">
+    <h3 v-if="comments.length">Comments</h3>
+    <div v-for="(comment, index) in comments" :key = "index">
       <hr>
-      <p>{{comment.name}}:  {{comment.text}}</p>
-      <button @click = "RemoveComment(car.id, comment.id)">x</button>
-      <form v-if = "isEdit && (car.id == editid)" v-on:submit.prevent="EditComment(car.id, comment.id)">
+      <p>{{comment.name}}:  {{comment.description}}</p>
+      <button @click = "ShowEdit(car.id)">Edit</button>
+      <form v-if = "isEdit && (car.id == editid)" v-on:submit.prevent="EditComment(comment._id)">
         <div class = "nameInput">
           <input v-model="addedName" placeholder="Name">
         </div>
@@ -35,44 +34,115 @@
         <br />
         <button type="submit">Submit</button>
       </form>
-      <button @click = "ShowEdit(car.id)">Edit</button>
+      <button @click="removeComment(comment._id)">x</button>
     </div>
 
 
 
+<button @click="hideCarViewer">Exit</button>
+    </div>
 
 
 
-    <button @click = "hideCarViewer">Exit</button>
   </div>
-  </div>
+
 </template>
 
 
 <script>
+import axios from "axios";
 export default {
   name: 'CarViewer',
+  data(){
+		return{
+      addedName: "",
+      addedComment:  "",
+      //id: 0,
+      isEdit: false,
+      // editid: 0,
+			//car:{},
+			comment: {description: ""},
+			comments: [],
+		}
+  },
+
+created() {
+this.getComments();
+  },
   methods: {
+    async getComments(){
+    console.log("trying to get comments");
+    console.log("car id is " + this.car.id);
+    let response = await axios.get('api/comments/' + this.car.id);
+    this.comments = response.data;
+    console.log(response);
+    console.log(this.car.comments);
+
+/*  this got rid of error, but comments were empty.
+async getComments(){
+console.log("trying to get comments");
+console.log("car id is " + this.car.id);
+
+let response = await axios.get( this.$root.$data.products[this.car.id].comments);
+
+this.comments = response.data;
+console.log(response);
+console.log(this.car.comments);
+},
+*/
+
+
+    },
+    // async getComments(){
+    //     try {
+    //       let response = await axios.get("/api/comments/" + this.car.id);
+    //       this.comments = response.data.comments;
+    //       return true;
+    //     } catch (error) {
+    //       console.log(error);
+    //     }
+    //   this is end of what v did  },
     hideCarViewer(){
+      this.comments = [];
       this.$root.$data.showCarViewer = false;
     },
-    addComment(id) {
-      let index = this.$root.$data.products.findIndex(car=>car.id == id)
-        this.$root.$data.products[index].comments.push({name:this.addedName, text:this.addedComment, id:this.id})
+    async addComment(id) {
+      //let index = this.$root.$data.products.findIndex(car=>car.id == id);
+        //this.$root.$data.products[index].comments.push({name:this.addedName, text:this.addedComment});
+        console.log("trying to save the comment");
+        await axios.post('/api/comments/' + id, {
+          description: this.addedComment,
+          name: this.addedName,
+        });
         this.addedName = "";
         this.addedComment = "";
-        this.id++;
+        this.getComments();
       },
-    RemoveComment(carid, commentid){
-        let carindex = this.$root.$data.products.findIndex(car=>car.id == carid)
-        let commentindex = this.$root.$data.products[carindex].comments.findIndex(car=>car.id == commentid)
-        this.$root.$data.products[carindex].comments.splice(commentindex, 1)
+
+      async removeComment(id) {
+      try {
+        await axios.delete("/api/comments/" + id);
+        this.getComments();
+        return true;
+      } catch (error) {
+        console.log(error);
+      }
+
+        //let carindex = this.$root.$data.products.findIndex(car=>car.id == carid)
+        //let commentindex = this.$root.$data.products[carindex].comments.findIndex(car=>car.id == commentid)
+        //this.$root.$data.products[carindex].comments.splice(commentindex, 1)
     },
-    EditComment(carid, commentid){
-      let carindex = this.$root.$data.products.findIndex(car=>car.id == carid)
-      let commentindex = this.$root.$data.products[carindex].comments.findIndex(car=>car.id == commentid)
-      this.$root.$data.products[carindex].comments[commentindex].text = this.addedComment;
-      this.$root.$data.products[carindex].comments[commentindex].name = this.addedName;
+    async EditComment(id){
+      try {
+        await axios.put('/api/comments/' + id, {
+          description: this.addedComment,
+          name: this.addedName,
+        });
+        this.getComments();
+        return true;
+      } catch (error) {
+        console.log(error);
+      }
       this.ShowEdit()
     },
     ShowEdit(id){
@@ -81,20 +151,11 @@ export default {
     }
 
   },
-  data() {
-    return{
-      addedName: "",
-      addedComment:  "",
-      id: 0,
-      isEdit: false,
-      editid: 0,
-    }
-  },
   computed: {
-      car(){
-        return this.$root.$data.currentCar;
-      }
-  }
+       car(){
+         return this.$root.$data.currentCar;
+       }
+   }
 }
 </script>
 
