@@ -58,11 +58,7 @@ app.get('/api/cars/:id', async (req, res) => {
 });
 
 
-const comments = require("./comments.js");
-app.use("/api/comments", comments.routes);
 
-const cars = require("./cars.js");
-app.use("/api/cars", cars.routes);
 
 
 // Create a model for items in the museum.
@@ -181,6 +177,33 @@ app.use("/api/cars", cars.routes);
 //     res.sendStatus(500);
 //   }
 // })
+
+
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
+
+const cookieSession = require('cookie-session');
+app.use(cookieSession({
+  name: 'session',
+  keys: [
+    'secretValue'
+  ],
+  cookie: {
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
+
+
+
+const users = require("./users.js");
+
+app.use("/api/users", users.routes);
+const cars = require("./cars.js");
+
+app.use("/api/cars", cars.routes);
+
+const comments = require("./comments.js");
+app.use("/api/comments", comments.routes);
 
 
 app.listen(3000, () => console.log('Server listening on port 3000!'));

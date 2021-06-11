@@ -1,11 +1,22 @@
 <template>
 <div>
   <div class="wrapper">
-
+    <div id="app">
+      <div v-if="!this.$root.$data.user">
+        <header id="header">
+          <h4>Login</h4>
+          <nav>
+            <router-link to="/dashboard"><i class="fas fa-user"></i></router-link>
+          </nav>
+        </header>
+    </div>
+      <router-view />
+    </div>
   </div>
   <ProductList :products="products" />
 </div>
 </template>
+
 
 
 <script>

@@ -12,6 +12,7 @@
     <div class="price">
       <h2>{{car.price}}</h2>
     </div>
+<div v-if="this.$root.$data.user">
     <form v-on:submit.prevent="addComment(car.id)">
       <input v-model="addedName" placeholder="Name">
       <textarea v-model="addedComment"></textarea>
@@ -20,11 +21,14 @@
       <br />
       <br />
     </form>
+
     <h3 v-if="comments.length">Comments</h3>
     <div v-for="(comment, index) in comments" :key = "index">
       <hr>
+      <h5>{{comment.user.username}}</h5>
       <p>{{comment.name}}:  {{comment.description}}</p>
       <button @click = "ShowEdit(car.id)">Edit</button>
+
       <form v-if = "isEdit && (car.id == editid)" v-on:submit.prevent="EditComment(comment._id)">
         <div class = "nameInput">
           <input v-model="addedName" placeholder="Name">
@@ -36,7 +40,7 @@
       </form>
       <button @click="removeComment(comment._id)">x</button>
     </div>
-
+  </div>
 
 
 <button @click="hideCarViewer">Exit</button>
@@ -113,6 +117,7 @@ console.log(this.car.comments);
         await axios.post('/api/comments/' + id, {
           description: this.addedComment,
           name: this.addedName,
+          user: this.$root.$data.user,
         });
         this.addedName = "";
         this.addedComment = "";
